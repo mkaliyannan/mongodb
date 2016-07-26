@@ -1,7 +1,8 @@
-#MongoDB 3.2.9 Replica Sets on AWS EC2 with arbiter
+#MongoDB 3.2.8 Replica Sets on AWS EC2 with arbiter CentOS 7. 
 A MongoDB replica set provides a mechanism to allow for a reliable database services. The basic replica set consists of three servers, a primary, a secondary and an arbitrator. The primary and secondary both hold a copy of the data. The arbitrator is normally a low spec server which just monitors the other servers and help with the failover process. In production, there can be more than three servers.
 
 To setup mongo as a replica set on Amazon Web Services EC2 you need to first setup a security group with ssh on port 22 and mongodb on port 27017. You then need to create three servers. Select Centos 7 and a micro (or bigger depending on your database size, ideally you should have enough memory to match your database size) instance for the primary and secondary and a nano instance for the arbitrator.
+
 
 Very Important!!!!  Please disable SElinux on Centos or Redhat Versions. This will silent not allowed to change context the server. so your mongod service wont start if you pointing to different path and also it will create multiple issues like authenctiaon etc.
 
@@ -401,7 +402,8 @@ Simple steps :
 (2) Before enable authentication need to create users to login on mongodb. follow below and modify the permissions as you like.
     
    create 2 users like these: 
-   --------------------------------------------------- 
+  
+  
   use admin
   db.createUser(
     {
@@ -410,7 +412,7 @@ Simple steps :
     roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
      }
      )
-    ----------------------------------------------------------
+
   use admin
   db.createUser(
     {
@@ -419,23 +421,30 @@ Simple steps :
     roles: [ { role: "root", db: "admin" } ]
      }
      )
-    ----------------------------------------------------------
+
+
 
 (3) generate the keyfile  as below 
+
     openssl rand -base64 741 > mongodb-keyfile
     chmod 600 mongodb-keyfile
+    
+    
 (4) copy these keys to all mongo servers and change the permissions accordingly. use whatever method like to copy. i prefer sftp command
+
 (5) stop other secondary hosts and arbiter first then primary.
+
 (6) open mongo.conf from /etc/mongod.conf
 
     Edit as below that point newly generated key.
   
-    security:
+   security:
 
    authorization: "enabled"
    keyFile: /secure/keys/mongodb-keyfile
 
 (4) do the same procedure on all hosts 
+
 (5) start the mongod instance on primary then rest all.
 
 ##############  All done ################  
